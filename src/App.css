@@ -1,0 +1,19 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.Toolbar {
+  flex-basis: 0;
+  flex-shrink: 0;
+}
+
+.PDF-viewer {
+  flex-basis: 0;
+  flex-grow: 1;
+}

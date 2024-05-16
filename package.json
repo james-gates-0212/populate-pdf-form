@@ -1,0 +1,97 @@
+{
+  "name": "populate-pdf-form",
+  "description": "Populate PDF Form with ReactJS + Electron",
+  "author": "James Gates",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8",
+    "pnpm": ">=8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/james-gates-0212/populate-pdf-form.git"
+  },
+  "keywords": [
+    "populate",
+    "pdf",
+    "form",
+    "react",
+    "electron",
+    "pspdfkit",
+    "pdf-lib"
+  ],
+  "homepage": "./",
+  "main": "./public/electron.js",
+  "build": {
+    "appId": "com.electron.populate-pdf-form",
+    "productName": "Populate PDF Form",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "deb"
+    }
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "pdf-lib": "^1.17.1",
+    "pspdfkit": "^2024.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.0"
+  },
+  "scripts": {
+    "verify-installation": "node scripts/verify-install.js && node scripts/copy-pspdfkit-files-public.js",
+    "del-pspdfkit-folder-build": "rimraf build/pspdfkit-lib",
+    "copy-pspdfkit-files-build": "node scripts/copy-pspdfkit-files-build.js",
+    "prebuild": "npm run verify-installation",
+    "prestart": "npm run verify-installation",
+    "start": "react-scripts start",
+    "build": "react-scripts build && npm run del-pspdfkit-folder-build && npm run copy-pspdfkit-files-build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron:start": "concurrently -k \"cross-env BROWSER=none npm start\" \"wait-on tcp:127.0.0.1:3000 && electronmon .\"",
+    "electron:package:mac": "yarn build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:win": "yarn build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "yarn build && electron-builder -l -c.extraMetadata.main=build/electron.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "last 1 electron version"
+    ],
+    "development": [
+      "last 1 electron version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.5",
+    "electron-builder": "^24.13.3",
+    "electronmon": "^2.0.3",
+    "ncp": "^2.0.0",
+    "prettier": "^3.2.5",
+    "wait-on": "^7.2.0"
+  }
+}
