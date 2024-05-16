@@ -1,5 +1,13 @@
 import { useRef } from 'react';
-import { PDFDocument, PDFCheckBox, PDFOptionList, PDFTextField, PDFDropdown } from 'pdf-lib';
+import {
+  PDFDocument,
+  PDFCheckBox,
+  PDFOptionList,
+  PDFTextField,
+  PDFDropdown,
+  createPDFAcroFields,
+  PDFName,
+} from 'pdf-lib';
 import './App.css';
 import PdfViewerComponent from './components/PdfViewerComponent';
 
@@ -29,6 +37,9 @@ function App() {
 
     const keys = Object.keys(values);
 
+    const replaceCheckboxValue = (value) =>
+      value.replace(/^\/((Off)|(No))$/i, '/No').replace(/^\/((On)|(Yes))$/i, '/Yes');
+
     for (const key of keys) {
       try {
         const value = values[key];
@@ -37,25 +48,26 @@ function App() {
         }
         const field = form.getField(key);
         if (field instanceof PDFCheckBox) {
-          if (key === '205_08') {
-            console.log(key, value);
-          }
-          if (/^(yes)$/i.test(value.join(''))) {
-            form.getCheckBox(key).check();
-          } else {
-            form.getCheckBox(key).uncheck();
-          }
+          const kids = createPDFAcroFields(field.acroField.Kids()).map((_) => _[0]);
+          const selectedValue = replaceCheckboxValue(PDFName.of(value.join('')).toString());
+          kids.forEach((kid) => {
+            const selectedKidValue = replaceCheckboxValue(kid.getOnValue().toString());
+            if (selectedValue === selectedKidValue) {
+              kid.setValue(kid.getOnValue()); // Check that particular checkbox.
+            }
+          });
         } else if (field instanceof PDFOptionList) {
           form.getOptionList(key).select(value);
         } else if (field instanceof PDFTextField) {
           form.getTextField(key).setText(value);
         } else if (field instanceof PDFDropdown) {
-          console.log(key, value);
           form.getDropdown(key).select(value);
         } else {
           console.log(field);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     // Step 4: Save the modified PDF.
